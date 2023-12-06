@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Grados</title>
+
+    <!-- Bootstrap para estilos y diseño -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofNpjW+0U1CKUOJcF6aLDBz0qLI5lRomTn" crossorigin="anonymous">
+
+    <!-- Cargar Bootstrap JS y TensorFlow JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.13.0/dist/tf.min.js"></script>
+
+    <style>
+        /* Estilos para el rectángulo */
+        .rectangulo {
+            height: 10vh; /* 10% de la altura de la ventana */
+            width: 100%; /* Ancho completo */
+            background-color: #f0f0f0; /* Fondo gris claro */
+            display: flex; /* Utilizar el modelo de caja flexible */
+            align-items: center; /* Centrar verticalmente */
+        }
+
+        /* Estilos para la imagen dentro del rectángulo */
+        .imagen {
+            max-height: 80%; /* Altura máxima del 80% del contenedor */
+            margin-left: 10px; /* Espacio a la izquierda de la imagen */
+        }
+
+        /* Estilos para el rectángulo gris oscuro */
+        .rectangulo-oscuro {
+            height: auto; /* 70% de la altura de la ventana */
+            width: 100%; /* Ancho completo */
+            background-color: #32393B ; /* Fondo gris oscuro */
+            display: flex; /* Utilizar el modelo de caja flexible */
+            flex-direction: column; /* Cambiar la dirección de los elementos a columna */
+            color: white; /* Texto blanco */
+            align-items: center; /* Centrar verticalmente */
+            justify-content: space-between; /* Alinear elementos en ambos extremos */
+        }
+
+        .formC {
+            height: auto; /* 70% de la altura de la ventana */
+            width: auto;/* Ancho completo */
+            display: flex; /* Utilizar el modelo de caja flexible */
+            flex-direction: row; /* Cambiar la dirección de los elementos a columna */
+            justify-content: space-between; /* Alinear elementos en ambos extremos */
+        }
+
+        /* Estilos para el rectángulo semi oscuro */
+        .rectangulo-semioscuro {
+            height: auto; /* 70% de la altura de la ventana */
+            width: auto; /* Ancho completo */
+            background-color:#555C5E ; /* Fondo gris oscuro */
+            display: flex; /* Utilizar el modelo de caja flexible */
+            align-items: center; /* Centrar horizontalmente */
+            color: white; /* Texto blanco */
+            align-items: center; /* Centrar verticalmente */
+
+            /* Establecer dirección de los elementos a columna */
+            flex-direction: row;
+        }
+
+        /* Estilos para el título */
+        .titulo {
+            font-size: 50px; /* Tamaño de fuente */
+            margin: 30px;
+        }
+
+        /* Estilos para el footer */
+        .subtitulo {
+            font-size: 15px; /* Tamaño de fuente */
+            margin: 30px;
+        }
+        nav {
+            display: flex;
+            justify-content: right;
+            padding: 10px;
+            margin-left: auto; /* Alinea a la derecha */
+            width: 100%;
+            
+        }
+        nav a {
+            text-decoration: none; /* Quitar subrayado del enlace */
+            color: #2980b9; /* Color del texto del enlace */
+            padding: 10px; /* Espaciado interno del enlace */
+            margin: 0 10px; /* Margen entre enlaces */
+            border-radius: 5px; /* Bordes redondeados */
+            transition: background-color 0.3s; /* Efecto de transición */
+            text-decoration: none;
+            text-align: right;
+        }
+        nav a:hover {
+            text-decoration: underline;
+             background-color: #2980b9; /* Color de fondo al pasar el ratón sobre el enlace */
+             text-decoration: none; /* Quitar subrayado del enlace */
+            color: #FFFFFF; /* Color del texto del enlace */
+        }
+        .grados {
+            color: #2980b9; /* Texto azul */
+        }
+
+        h2 {
+            color: #2980b9;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: black;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        form {
+            width: 30%;
+            min-height: 500px;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #FFFFFF;
+            border: 3px solid  #2980b9;
+        }
+        button {
+            background-color:  #2980b9;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color:  #FFFFFF;
+            color:  #2980b9;
+            border: 2px solid #2980b9;
+        }
+
+        h3 {
+            margin: 20px;
+            color: #4caf50 ;
+        }
+
+
+    </style>
+
+    <!-- Script principal -->
+    <script type="text/javascript">
+        // Variable para almacenar los modelo
+        var model = null;
+	
+		(async () => {
+            		console.log("Cargando modelo...");
+           		 model = await tf.loadLayersModel("Area/model.json");
+            		console.log("Modelo de area cargado");
+        	})();
+		(async () => {
+            		console.log("Cargando modelo...");
+           		 model = await tf.loadLayersModel("Volumen/model.json");
+            		console.log("Modelo de Volumen cargado");
+        	})();
+		(async () => {
+            		console.log("Cargando modelo...");
+           		 model = await tf.loadLayersModel("Perimetro/model.json");
+            		console.log("Modelo de perimetro cargado");
+        	})();
+//Funcion para calcular el perimetro
+	funcion cal_perimetro{
+          		var lado1 = document.getElementById("lado1").value;
+			var lado2 = document.getElementById("lado2").value;
+			var lado3 = document.getElementById("lado3").value;
+
+            	// Verificar si el modelo está cargado
+            	if (model != null) {
+               		 var tensor = tf.tensor2d([parseFloat(lado1),parseFloat(lado2),parseFloat(lado2)],[1,3]);
+
+                	var prediccion = model.predict(tensor).dataSync();
+                	prediccion = Math.round(prediccion);
+
+               		 document.getElementById("perimetroResultado").innerHTML =
+                     	  prediccion +"u" ;
+        }
+	}
+//Funcion para calcular el area
+	funcion cal_area{
+          		var base = document.getElementById("base").value;
+            		var altura = document.getElementById("altura").value;
+
+            	// Verificar si el modelo está cargado
+            	if (model != null) {
+               		 var tensor = tf.tensor2d([parseFloat(area),parseFloat(base)],[1,2]);
+
+                	var prediccion = model.predict(tensor).dataSync();
+                	prediccion = Math.round(prediccion);
+
+               		 document.getElementById("areaResultado").innerHTML =
+                     	  prediccion +"u^2" ;
+        }
+	}
+//Funcion para calcular el volumen
+	funcion cal_volumen{
+          		var anchox = document.getElementById("anchox").value;
+            		var alturay = document.getElementById("alturay").value;
+            		var profundidadz = document.getElementById("profundidadz").value;
+
+            	// Verificar si el modelo está cargado
+            	if (model != null) {
+               		 var tensor = tf.tensor2d([parseFloat(anchox),parseFloat(alturay),parseFloat(profundidadz)],[1,3]);
+
+                	var prediccion = model.predict(tensor).dataSync();
+                	prediccion = Math.round(prediccion);
+
+               		 document.getElementById("volumenResultado").innerHTML =
+                     	  prediccion +"u^3" ;
+        }
+	}
+
+        
+    </script>
+</head>
+<body class="container mt-5">
+
+    <!-- Rectángulo con Imagen -->
+    <header class="rectangulo">
+        <img class="imagen" src="logo.png" alt="Imagen">
+        <nav>
+            <a href="temperatura.html">Practica 2: Temperatura</a>
+        </nav>
+    </header>
+    
+
+
+    <!-- Rectángulo gris oscuro -->
+    <div class="rectangulo-oscuro">
+        <!-- Título con grados Celsius y Fahrenheit -->
+        <div>
+            <h1 class="titulo">Cálculos con <span class="grados">Triángulos</span>
+            </h1>
+        </div>
+        <div class="formC">
+            <!-- Rectángulo - Perímetro -->
+            <form>
+                <h2>Perímetro</h2>
+                <img  src="/Perimetro/perimetro.PNG" alt="Triángulo">
+                    <label for="texto">Lado1:</label>
+                    <input id="lado1"   name="lado1">
+                    <label for="texto">Lado2:</label>
+                    <input id="lado2"  name="lado2">
+                    <label for="texto">Lado3:</label>
+                    <input id="lado3"  name="lado3">
+                    <button type="button" onclick="cal_perimetro">Calcular perímetro</button>
+                    <h3>Resultado:</h3>
+                    <label align="center">Resultados obtenidos <span id="perimetroResultado"></span></label>
+            </form>
+            
+            <!-- Rectángulo - Area -->
+            <form>
+                <h2>Área</h2>
+                <img src="/Area/area.PNG" alt="Triángulo">
+                    <label for="texto">Base:</label>
+                    <input id="base"   name="base">
+                    <label for="texto">Altura:</label>
+                    <input id="altura"  name="altura">
+                    <button type="button" onclick="cal_area">Calcular área</button>
+                    <h3>Resultado:</h3>
+                    <label align="center">Resultados obtenidos <span id="areaResultado"></span></label>
+            </form>
+
+                <!-- Piramide triangular - volumen -->
+                <form>
+                    <h2>Volumen</h2>
+                    <img src="/Volumen/volumen.PNG" alt="Triángulo">
+                        <label for="texto">Altura(y):</label>
+                        <input id="alturax"   name="altura">
+                        <label for="ancho">Ancho(x):</label>
+                        <input id="anchox"  name="ancho">
+                        <label for="profundidad">Profundidad(z):</label>
+                        <input id="profundidadz"  name="profundidad">
+                        <button type="button" onclick="cal_volumen">Calcular volumen</button>
+                        <h3>Resultado:</h3>
+                        <label align="center">Resultados obtenidos <span id="volumenResultado"></span></label>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="rectangulo-semioscuro">
+        <div class="subtitulo">
+            Desarrollado por: Maribel Amaya Galaviz<br>
+            Materia: Inteligencia artificial<br>
+            Maestra: Stephanie Cordero Martínez
+        </div>
+    </div>
+    
+</body>
+</html>
+
+
